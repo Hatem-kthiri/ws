@@ -15,14 +15,14 @@ const Write = () => {
     const handleChange = (e) => {
         setNewPost({ ...newPost, [e.target.name]: e.target.value });
     };
-    function getBase64(file) {
+    const getBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => resolve(reader.result);
             reader.onerror = (error) => reject(error);
         });
-    }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch(add_post(newPost, history));

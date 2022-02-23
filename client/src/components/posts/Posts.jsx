@@ -48,11 +48,18 @@ export default function Posts({ Posts }) {
             postDescription: "music give me life and every thing",
         },
     ]);
+
     return (
         <div className="posts">
-            {Posts.map((post) => {
-                return <Post post={post} key={post._id} />;
-            })}
+            {Posts.length === 0 ? (
+                <div>
+                    <p id="noPost">There's No Post</p>
+                </div>
+            ) : (
+                Posts.map((post) => {
+                    return <Post post={post} key={post._id} />;
+                })
+            )}
         </div>
     );
 }

@@ -72,7 +72,6 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/current", isAuth, (req, res) => {
-    console.log(req);
     if (req.user) {
         res.send({ status: true, msg: "authorized", user: req.user });
     } else {

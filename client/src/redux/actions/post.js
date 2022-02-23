@@ -1,4 +1,8 @@
-import { GET_POSTS, GET_CURRENT_POST } from "../constants/actions-types";
+import {
+    GET_POSTS,
+    GET_CURRENT_POST,
+    GET_POST_DETAIL,
+} from "../constants/actions-types";
 import axios from "axios";
 
 export const get_posts = () => async (dispatch) => {
@@ -18,9 +22,11 @@ export const add_post = (newPost, history) => async (dispatch) => {
             },
             newPost,
         };
-        await axios
-            .post("api/posts/addPost", config)
-            .then(dispatch(get_posts()), history.push("/"));
+        const result = await axios.post("api/posts/addPost", config);
+        dispatch(get_posts());
+        if (result.data.status === 201) {
+            history.push("/");
+        }
     } catch (error) {
         console.log(error);
     }
@@ -39,27 +45,46 @@ export const get_current_posts = () => async (dispatch) => {
         console.log(error);
     }
 };
-
-export const delete_current_post = (id) => async (dispatch) => {
-    console.log(id);
-    axios
-        .delete(`api/posts/deleteCurrentPosts/${id}`)
-        .then(() => dispatch(get_current_posts()))
-        .catch((err) => console.log(err));
+export const update_current_post = (id, updatePost) => async (dispatch) => {
+    try {
+        const config = {
+            headers: {
+                authorization: localStorage.getItem("token"),
+            },
+            updatePost,
+        };
+        const result = await axios.put(
+            `api/posts/updateCurrentPosts/${id}`,
+            config
+        );
+        dispatch(get_current_posts());
+    } catch (error) {
+        console.log(error);
+    }
 };
-// export const delete_current_post = (id) => async (dispatch) => {
-//     try {
-//         const config = {
-//             headers: {
-//                 authorization: localStorage.getItem("token"),
-//             },
-//         };
-//         const result = await axios.delete(
-//             `api/posts/deleteCurrentPosts/${id}`,
-//             config
-//         );
-//         dispatch(get_current_posts());
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
+export const delete_current_post = (id) => async (dispatch) => {
+    try {
+        const config = {
+            headers: {
+                authorization: localStorage.getItem("token"),
+            },
+        };
+        const result = await axios.delete(
+            `api/posts/deleteCurrentPosts/${id}`,
+            config
+        );
+        dispatch(get_current_posts());
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const get_post_detail = (id) => async (dispatch) => {
+    try {
+        let result = await axios.get(`/api/posts/${id}`);
+        console.log(result);
+        dispatch({ type: GET_POST_DETAIL, payload: result.data });
+    } catch (error) {
+        console.log(error);
+    }
+};

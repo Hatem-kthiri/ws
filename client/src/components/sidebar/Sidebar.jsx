@@ -22,6 +22,9 @@ export default function Sidebar({ darkMode }) {
                             className="sidebarImg"
                         />
                         <p className="profileName">{user && user.userName}</p>
+                        <Link to="/write">
+                            <p>Add Post</p>
+                        </Link>
                         <Link to="/myposts">
                             <p>My Posts</p>
                         </Link>

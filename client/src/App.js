@@ -6,17 +6,26 @@ import Write from "./pages/write/Write";
 import Settings from "./pages/settings/Settings";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import PostDetail from "./components/PostDetail/PostDetail";
+import Sidebar from "./components/sidebar/Sidebar";
 import { Switch, Route } from "react-router-dom";
 import ScrollToTop from "react-scroll-to-top";
 
 import "./App.css";
 import useDarkMode from "use-dark-mode";
 import MyPosts from "./pages/myPosts/myPosts";
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { get_posts } from "./redux/actions/post";
 function App() {
     const darkMode = useDarkMode(false);
 
     const user = true;
+    const posts = useSelector((state) => state.postReducer.posts);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(get_posts());
+    }, []);
     return (
         <div>
             <ScrollToTop smooth color="#6f00ff" />
@@ -24,7 +33,7 @@ function App() {
             <Topbar darkMode={darkMode} />
             <Switch>
                 <Route exact path="/">
-                    <Home darkMode={darkMode} />
+                    <Home darkMode={darkMode} posts={posts} />
                 </Route>
                 <Route exact path="/myposts">
                     <MyPosts />
@@ -41,6 +50,12 @@ function App() {
                 </Route>
                 <Route exact path="/post/:postId">
                     <Single darkMode={darkMode} />
+                </Route>
+                <Route exact path="/:id">
+                    <div style={{ display: "flex" }}>
+                        <PostDetail posts={posts} />
+                        <Sidebar darkMode={darkMode} />
+                    </div>
                 </Route>
             </Switch>
         </div>

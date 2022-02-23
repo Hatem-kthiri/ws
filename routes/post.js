@@ -48,6 +48,23 @@ router.get("/getCurrentPosts", isAuth, async (req, res) => {
     }
 });
 
+router.put("/updateCurrentPosts/:id", isAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatePost = await Post.findByIdAndUpdate(id, {
+            ...req.body.updatePost,
+        });
+        res.json({
+            status: true,
+            msg: "post updated successfully",
+            updatePost,
+        });
+    } catch (err) {
+        console.log(err);
+        res.json({ status: 500, message: err });
+    }
+});
+
 router.delete("/deleteCurrentPosts/:id", isAuth, async (req, res) => {
     try {
         const { id } = req.params;
@@ -63,13 +80,13 @@ router.delete("/deleteCurrentPosts/:id", isAuth, async (req, res) => {
     }
 });
 
-router.get("/user/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const articles = await Article.find({
-            postAuthor: id,
+        const post = await Post.findOne({
+            _id: id,
         }).populate("postAuthor", "userName  -_id");
-        res.json({ status: 200, articles });
+        res.json({ status: 200, msg: "Ok", post });
     } catch (err) {
         console.log(err);
         res.json({ status: 500, message: err });
