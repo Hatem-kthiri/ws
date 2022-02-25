@@ -40,8 +40,8 @@ const EditPost = ({ setShow, post }) => {
     };
     return (
         <>
-            <div class="details-modal">
-                <div class="details-modal-title">
+            <div className="details-modal">
+                <div className="details-modal-title">
                     <h1>Edit Post</h1>
                 </div>
                 <div className="input-modal">

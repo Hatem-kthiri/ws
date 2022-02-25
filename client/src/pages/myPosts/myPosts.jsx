@@ -33,7 +33,7 @@ const MyPosts = () => {
                     <div className="post-card" key={post._id}>
                         <div className="info">
                             <img
-                                src={post && post.img}
+                                src={post && `/uploads/${post.img}`}
                                 alt="Image"
                                 className="postImg"
                             />

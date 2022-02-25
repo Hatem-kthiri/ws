@@ -1,25 +1,77 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
+const path = require("path");
 const isAuth = require("../middlewares/isAuth");
+const multer = require("multer");
+const jwt = require("jsonwebtoken");
 
-router.post("/addPost", isAuth, async (req, res) => {
-    try {
-        const { title, postDescription, img } = req.body.newPost;
-        const newPost = await Post.create({
-            postAuthor: req.user._id,
-            title,
-            postDescription,
-            img,
-        });
-        res.json({
-            status: 201,
-            msg: "Post Created Successfully",
-            newPost,
-        });
-    } catch (err) {
-        res.json({ status: 500, msg: `Problem with add Post ${err}` });
-    }
+///////////////////////////
+
+const fileUploadPaths = {
+    FILE_UPLOAD_PATH: path.join(__dirname, "..", "client/public/uploads"),
+};
+
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, fileUploadPaths.FILE_UPLOAD_PATH);
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname.toLowerCase().replace(/ /g, "_"));
+    },
 });
+
+const postFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith("image")) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+
+let uploadPost = multer({
+    storage: storage,
+    fileFilter: postFilter,
+});
+
+router.post("/addPost", isAuth, uploadPost.single("img"), async (req, res) => {
+    let newPost = {
+        ...req.body,
+        postAuthor: req.user._id,
+        type: "text",
+    };
+
+    if (req.file) {
+        const fileName = req.file.filename;
+        newPost = {
+            ...newPost,
+            img: `${fileName}`,
+        };
+    }
+
+    const savedPost = await new Post(newPost).save();
+
+    return res.json({ status: 201, post: savedPost });
+});
+
+////////////////////////////////////////////////////
+// router.post("/addPost", isAuth, async (req, res) => {
+//     try {
+//         const { title, postDescription, img } = req.body.newPost;
+//         const newPost = await Post.create({
+//             postAuthor: req.user._id,
+//             title,
+//             postDescription,
+//             img,
+//         });
+//         res.json({
+//             status: 201,
+//             msg: "Post Created Successfully",
+//             newPost,
+//         });
+//     } catch (err) {
+//         res.json({ status: 500, msg: `Problem with add Post ${err}` });
+//     }
+// });
 router.get("/", async (req, res) => {
     try {
         const posts = await Post.find({});
@@ -52,7 +104,7 @@ router.put("/updateCurrentPosts/:id", isAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const updatePost = await Post.findByIdAndUpdate(id, {
-            ...req.body.updatePost,
+            ...req.body,
         });
         res.json({
             status: true,

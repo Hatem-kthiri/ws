@@ -18,11 +18,11 @@ export const add_post = (newPost, history) => async (dispatch) => {
     try {
         const config = {
             headers: {
+                "Content-Type": "multipart/form-data",
                 authorization: localStorage.getItem("token"),
             },
-            newPost,
         };
-        const result = await axios.post("api/posts/addPost", config);
+        const result = await axios.post("/api/posts/addPost", newPost, config);
         dispatch(get_posts());
         if (result.data.status === 201) {
             history.push("/");
@@ -51,10 +51,10 @@ export const update_current_post = (id, updatePost) => async (dispatch) => {
             headers: {
                 authorization: localStorage.getItem("token"),
             },
-            updatePost,
         };
         const result = await axios.put(
             `api/posts/updateCurrentPosts/${id}`,
+            updatePost,
             config
         );
         dispatch(get_current_posts());

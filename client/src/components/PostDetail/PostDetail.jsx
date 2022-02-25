@@ -10,13 +10,12 @@ const PostDetail = () => {
     useEffect(() => {
         dispatch(get_post_detail(id));
     }, []);
-    console.log(postDetail);
     return (
         <div className="singlePost">
             {postDetail ? (
                 <div className="singlePostWrapper">
                     <img
-                        src={postDetail.img}
+                        src={`./uploads/${postDetail.img}`}
                         alt=""
                         className="singlePostImg"
                     />
